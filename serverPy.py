@@ -2,7 +2,6 @@ from socket import socket
 from threading import Thread
 from zlib import compress
 
-import pyautogui as pyautogui
 from mss import mss
 
 WIDTH = 1900
