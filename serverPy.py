@@ -1,3 +1,4 @@
+import pickle
 from socket import socket
 from threading import Thread
 from zlib import compress
@@ -8,6 +9,8 @@ WIDTH = 1900
 HEIGHT = 1000
 # WIDTH, HEIGHT = pyautogui.size()
 # HEIGHT -= 20
+
+HEADERSIZE = 10
 
 
 def retreive_screenshot(conn):
@@ -32,6 +35,10 @@ def retreive_screenshot(conn):
 
             # Send pixels
             conn.sendall(pixels)
+
+            # pkl = pickle.dumps(pixels)
+            # msg = bytes(f'{len(pkl):<{HEADERSIZE}}', 'utf-8') + pkl
+            # conn.send(msg)
 
 
 def main(host='127.0.0.2', port=8200):

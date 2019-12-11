@@ -62,7 +62,7 @@ class Client(GUI):
                 # Display the picture
                 screen.blit(img, (0, 0))
                 pygame.display.flip()
-                clock.tick(60)
+                clock.tick(10)
         finally:
             sock.close()
 
