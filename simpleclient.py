@@ -1,14 +1,16 @@
+import pickle
 import threading
 import time
 from socket import socket
-from zlib import decompress
+# from zlib import decompress
+# from gzip import decompress
 from Graphics import *
 
 import pygame
 
-WIDTH = 1900
-HEIGHT = 1000
-
+WIDTH = 375
+HEIGHT = 812
+HEADERSIZE = 10
 
 class Client(GUI):
     def __init__(self, root=None):
@@ -31,6 +33,22 @@ class Client(GUI):
             buf += data
         return buf
 
+    def recv_pkl(self, conn):
+        full_msg = b''
+        new_msg = True
+        while True:
+            data = conn.recv(16)
+            if new_msg:
+                msg_len = int(data[:HEADERSIZE])
+                new_msg = False
+
+            full_msg += data
+
+            if len(full_msg) - HEADERSIZE == msg_len:
+                data_recv = pickle.loads(full_msg[HEADERSIZE:])
+                break
+        return data_recv
+
     def main(self, host='127.0.0.1', port=8200):
         # host = input("Choose IPv4 : ")
         while self.wait:
@@ -52,9 +70,11 @@ class Client(GUI):
                         break
 
                 # Retreive the size of the pixels length, the pixels length and pixels
-                size_len = int.from_bytes(sock.recv(1), byteorder='big')
-                size = int.from_bytes(sock.recv(size_len), byteorder='big')
-                pixels = decompress(self.recvall(sock, size))
+                # size_len = int.from_bytes(sock.recv(1), byteorder='big')
+                # size = int.from_bytes(sock.recv(size_len), byteorder='big')
+                # pixels = decompress(self.recvall(sock, size))
+
+                pixels = self.recv_pkl(sock)
 
                 # Create the Surface from raw pixels
                 img = pygame.image.fromstring(pixels, (WIDTH, HEIGHT), 'RGB')
