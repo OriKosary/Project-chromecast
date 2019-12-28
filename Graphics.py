@@ -3,6 +3,7 @@ import tkinter as tk
 
 import keyboard as keyboard
 
+# TODO : need to upgrade Gui
 
 class GUI(object):
     root = None  # type -> tk
