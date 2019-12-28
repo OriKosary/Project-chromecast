@@ -6,3 +6,5 @@ to the other man github see whats up
 * need to see following modules -
 Image - http://omz-software.com/pythonista/docs/ios/Image.html
 clipboard - http://omz-software.com/pythonista/docs/ios/clipboard.html#module-clipboard
+
+- this might help (using objC) - http://codethink.no-ip.org/wordpress/archives/673
