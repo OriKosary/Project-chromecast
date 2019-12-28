@@ -8,3 +8,5 @@ Image - http://omz-software.com/pythonista/docs/ios/Image.html
 clipboard - http://omz-software.com/pythonista/docs/ios/clipboard.html#module-clipboard
 
 - this might help (using objC) - http://codethink.no-ip.org/wordpress/archives/673
+
+- EPIC FILE - https://stackoverflow.com/questions/35097837/capture-video-data-from-screen-in-python
