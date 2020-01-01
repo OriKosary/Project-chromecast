@@ -20,3 +20,6 @@ problem arise ?
 Prashant - Again, thanks much for the speedy reply. Here's a link to the dumps as well as a possible explanation.
 
 https://onedrive.live.com/redir?resid=8976472D96FEFA00!53212&authkey=!AHyR6n3C6QeT48A&ithint=folder%2c.txt
+
+START OF WORK WITH SWIFT!
+replaykit - https://code.tutsplus.com/tutorials/ios-9-an-introduction-to-replaykit--cms-25458
