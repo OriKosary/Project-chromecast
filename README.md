@@ -23,3 +23,6 @@ https://onedrive.live.com/redir?resid=8976472D96FEFA00!53212&authkey=!AHyR6n3C6Q
 
 START OF WORK WITH SWIFT!
 replaykit - https://code.tutsplus.com/tutorials/ios-9-an-introduction-to-replaykit--cms-25458
+
+OR DARTS
+https://flutter.dev/docs/get-started/install/windows#run-flutter-doctor
