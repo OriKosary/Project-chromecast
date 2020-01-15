@@ -28,3 +28,4 @@ replaykit - https://code.tutsplus.com/tutorials/ios-9-an-introduction-to-replayk
 
 OR DARTS
 https://flutter.dev/docs/get-started/install/windows#run-flutter-doctor
+compress in flutter - https://pub.dev/packages/compressimage
