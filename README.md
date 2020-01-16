@@ -29,3 +29,5 @@ replaykit - https://code.tutsplus.com/tutorials/ios-9-an-introduction-to-replayk
 OR DARTS
 https://flutter.dev/docs/get-started/install/windows#run-flutter-doctor
 compress in flutter - https://pub.dev/packages/compressimage
+
+iOS client server tut - https://ase.in.tum.de/lehrstuhl_1/teaching/tutorials/540-ios14intro-client-server-communication
