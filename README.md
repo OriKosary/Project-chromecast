@@ -31,3 +31,4 @@ https://flutter.dev/docs/get-started/install/windows#run-flutter-doctor
 compress in flutter - https://pub.dev/packages/compressimage
 
 iOS client server tut - https://ase.in.tum.de/lehrstuhl_1/teaching/tutorials/540-ios14intro-client-server-communication
+HUGE FILE - https://medium.com/@suragch/minimal-client-server-example-for-flutter-and-server-side-dart-dc4257903753
