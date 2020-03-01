@@ -6,9 +6,9 @@ import 'package:get_ip/get_ip.dart';
 import 'package:screenshot/screenshot.dart';
 import 'dart:async';
 import 'dart:io';
-import 'package:compressimage/compressimage.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart';
 
 void main() => runApp(MyApp());
 
@@ -32,8 +32,29 @@ class Client extends Screenshotter {
   Socket socket;
   Base64Encoder b64e = new Base64Encoder();
 
+  File _pickedImage;
+
+  Future getImageFromCamera() async {
+
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      _pickedImage = image;
+    });
+  }
+
+  Future getImageFromGallery() async {
+
+    final file = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    if(file != null) {
+      setState(() => _pickedImage = file);
+    }
+
+  }
+
   void main() {
-    Socket.connect("10.51.101.223", port).then((socket) {
+    Socket.connect("192.168.1.40", port).then((socket) {
 //    var img = s.return_compressed_Img();
 //    List<int> imageBytes1 = img.readAsBytesSync();
 //    String imgInString = b64e.convert(imageBytes1);
@@ -41,8 +62,11 @@ class Client extends Screenshotter {
 //    String str = 'hello this is ori and i am proving that this works';
 //    socket.write(str);
 //    socket.write("data");
- //   File img = s.get_screen_shot();
-    socket.write(img);
+      //   File img = s.get_screen_shot();
+      getImageFromGallery();
+      if (_pickedImage != null) {
+        socket.write(_pickedImage);
+      }
     });
     socket.close();
   }
@@ -66,28 +90,13 @@ class Screenshotter extends State {
       controller: screenshotController,
     );
     screenshotController.capture().then((File image) {
-    //Capture Done
-    setState(() {
-    _imageFile = image;
-    });
+      //Capture Done
+      setState(() {
+        _imageFile = image;
+      });
     }).catchError((onError) {
-    print(onError);
+      print(onError);
     });
-    return _imageFile;
-  }
-
-  // Compress screenshot
-  Future compressNow() async {
-    print("FILE SIZE BEFORE: " + _imageFile.lengthSync().toString());
-    await CompressImage.compress(imageSrc: _imageFile.path, desiredQuality: 80); //desiredQuality ranges from 0 to 100
-    print("FILE SIZE  AFTER: " + _imageFile.lengthSync().toString());
-    return _imageFile;
-  }
-
-  // Will return the final product
-  File return_compressed_Img(){
-    get_screen_shot();
-    compressNow();
     return _imageFile;
   }
 }
@@ -106,44 +115,44 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     String ipAddress = getIP().toString();
     return CupertinoTabScaffold(
-       tabBar: CupertinoTabBar(
+        tabBar: CupertinoTabBar(
           items: [
             BottomNavigationBarItem(
                 icon: Icon(CupertinoIcons.home),
                 title: Text('Home')
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.person),
-              title: Text('Profile')
-             ),
+                icon: Icon(CupertinoIcons.person),
+                title: Text('Profile')
+            ),
           ],
-       ),
-       tabBuilder: (context, i){
-         return CupertinoTabView(
-           builder: (context) {
-             return CupertinoPageScaffold(
-               navigationBar: CupertinoNavigationBar(
-                 middle: (i == 0) ? Text('Home') : Text('Profile'),
-               ),
-              // TODO : Here i will put a diffrent parameter for the condition!!!!!
-               child: Center(
-                 //need to do if/else statement to declare what name to do for each button
-                 child: (i == 0) ?
-                 CupertinoButton(
-                   //TODO : Here just switch the text to icon and use the right paramaters
-                   // Text('Button for Server', style : CupertinoTheme.of(context).textTheme.actionTextStyle.copyWith(fontSize: 32)),
-                   child: Icon(CupertinoIcons.play_arrow_solid, size: 180.0),
-                   // TODO : need to do if/else statement to declare what function to do for each button
-                   onPressed: () {
-                      // START STREAMING
-                      Client().main();
-                   }, // TODO : need to figure out how to work with future, and how to write more then 1 line
-                 ) : Text('Ipv4 : $ipAddress' , style: CupertinoTheme.of(context).textTheme.actionTextStyle.copyWith(fontSize: 32),)
-               )
-             );
-           }
-         );
-      }
+        ),
+        tabBuilder: (context, i){
+          return CupertinoTabView(
+              builder: (context) {
+                return CupertinoPageScaffold(
+                    navigationBar: CupertinoNavigationBar(
+                      middle: (i == 0) ? Text('Home') : Text('Profile'),
+                    ),
+                    // TODO : Here i will put a diffrent parameter for the condition!!!!!
+                    child: Center(
+                      //need to do if/else statement to declare what name to do for each button
+                        child: (i == 0) ?
+                        CupertinoButton(
+                          //TODO : Here just switch the text to icon and use the right paramaters
+                          // Text('Button for Server', style : CupertinoTheme.of(context).textTheme.actionTextStyle.copyWith(fontSize: 32)),
+                          child: Icon(CupertinoIcons.play_arrow_solid, size: 180.0),
+                          // TODO : need to do if/else statement to declare what function to do for each button
+                          onPressed: () {
+                            // START STREAMING
+                            Client().main();
+                          }, // TODO : need to figure out how to work with future, and how to write more then 1 line
+                        ) : Text('Ipv4 : $ipAddress' , style: CupertinoTheme.of(context).textTheme.actionTextStyle.copyWith(fontSize: 32),)
+                    )
+                );
+              }
+          );
+        }
     );
   }
 }
@@ -155,18 +164,18 @@ class DetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          middle: Text('Details'),
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text('Details'),
+      ),
+      child: Center(
+        // TODO : here will be the condition statement
+        child: Text(
+          'Details for $topic',
+          style: CupertinoTheme.of(context).textTheme.navLargeTitleTextStyle,
         ),
-        child: Center(
-          // TODO : here will be the condition statement
-            child: Text(
-            'Details for $topic',
-            style: CupertinoTheme.of(context).textTheme.navLargeTitleTextStyle,
-          ),
-        ),
-      );
+      ),
+    );
   }
 }
 
