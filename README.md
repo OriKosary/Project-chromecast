@@ -34,3 +34,7 @@ iOS client server tut - https://ase.in.tum.de/lehrstuhl_1/teaching/tutorials/540
 HUGE FILE - https://medium.com/@suragch/minimal-client-server-example-for-flutter-and-server-side-dart-dc4257903753
 screenshot in flutter - https://pub.dev/packages/screenshot
 sockets flutter - https://stackoverflow.com/questions/51077233/using-socket-in-flutter-apps
+
+
+READ an image as base 64
+https://stackoverflow.com/questions/57759689/reading-an-image-file-from-device-storage-and-converting-to-base64-results-in-an
