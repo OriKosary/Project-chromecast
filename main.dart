@@ -21,57 +21,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// TODO : build a Client who will send the image
-class Client extends Screenshotter {
-
-//  static String ip = getAddress(); // This will be the server ip, '''don't forget to display it'''
-  int port = 8200;
-//  InternetAddress address = InternetAddress('127.0.0.1');
-  Screenshotter s = new Screenshotter();
-
-  Socket socket;
-  Base64Encoder b64e = new Base64Encoder();
-
-  File _pickedImage;
-
-  Future getImageFromCamera() async {
-
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
-
-    setState(() {
-      _pickedImage = image;
-    });
-  }
-
-  Future getImageFromGallery() async {
-
-    final file = await ImagePicker.pickImage(source: ImageSource.gallery);
-
-    if(file != null) {
-      setState(() => _pickedImage = file);
-    }
-
-  }
-
-  void main() {
-    Socket.connect("192.168.1.40", port).then((socket) {
-//    var img = s.return_compressed_Img();
-//    List<int> imageBytes1 = img.readAsBytesSync();
-//    String imgInString = b64e.convert(imageBytes1);
-//    socket.write(imgInString);
-//    String str = 'hello this is ori and i am proving that this works';
-//    socket.write(str);
-//    socket.write("data");
-      //   File img = s.get_screen_shot();
-      getImageFromGallery();
-      if (_pickedImage != null) {
-        socket.write(_pickedImage);
-      }
-    });
-    socket.close();
-  }
-
-}
+String stupido = "";
 
 class Screenshotter extends State {
 
@@ -103,6 +53,8 @@ class Screenshotter extends State {
 
 class HomeScreen extends StatelessWidget {
 
+  File _pickedImage;
+
   noSuchMethod(Invocation i) => super.noSuchMethod(i);
 //  State<HomeScreen>();
 
@@ -111,9 +63,81 @@ class HomeScreen extends StatelessWidget {
     return GetIp.ipAddress;
   }
 
+
+//  static String ip = getAddress(); // This will be the server ip, '''don't forget to display it'''
+  int port = 8200;
+//  InternetAddress address = InternetAddress('127.0.0.1');
+  Screenshotter s = new Screenshotter();
+
+  Socket socket;
+  Base64Encoder b64e = new Base64Encoder();
+  Latin1Encoder l1e = new Latin1Encoder();
+
+  Future getImageFromCamera() async {
+
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+    if (image != null) {
+      _pickedImage = image;
+    }
+
+  }
+
+  Future getImageFromGallery() async {
+
+    final file = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (file != null) {
+      _pickedImage = file;
+    }
+  }
+
+  ScreenshotController screenshotController = ScreenshotController();
+
+  // Gets screenshot
+  File get_screen_shot() {
+    Screenshot(
+      controller: screenshotController,
+    );
+    screenshotController.capture().then((File image) {
+      //Capture Done
+      if (image != null){
+        _pickedImage = image;
+      }
+    }).catchError((onError) {
+      print(onError);
+    });
+    return _pickedImage;
+  }
+
+  void main() {
+    // CupertinoTextField(controller: _textController,);
+    getImageFromGallery();
+    // _pickedImage = get_screen_shot();
+    Socket.connect("192.168.1.40", port).then((socket) async {
+      if (_pickedImage != null) {
+        List<int> imageBytes = await _pickedImage.readAsBytes();
+        String base64Image = b64e.convert(imageBytes);
+        String base64ImageStringLen = base64Image.length.toString();
+        stupido = base64ImageStringLen;
+        socket.write(base64Image);
+      }
+      else {
+         socket.write('null');
+      }
+    });
+    socket.close();
+  }
+
+  TextEditingController _textController;
+
+  @override
+  void initState() {
+//    super.initState();
+    _textController = TextEditingController(text: 'initial text');
+  }
+
   @override
   Widget build(BuildContext context) {
-    String ipAddress = getIP().toString();
+
     return CupertinoTabScaffold(
         tabBar: CupertinoTabBar(
           items: [
@@ -145,9 +169,9 @@ class HomeScreen extends StatelessWidget {
                           // TODO : need to do if/else statement to declare what function to do for each button
                           onPressed: () {
                             // START STREAMING
-                            Client().main();
+                            main();
                           }, // TODO : need to figure out how to work with future, and how to write more then 1 line
-                        ) : Text('Ipv4 : $ipAddress' , style: CupertinoTheme.of(context).textTheme.actionTextStyle.copyWith(fontSize: 32),)
+                        ) : _pickedImage == null ?  Text("No Image") : Text(stupido)//Image.file(_pickedImage, width: 300, height: 200)
                     )
                 );
               }
