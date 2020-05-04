@@ -3,12 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_ip/get_ip.dart';
+import 'package:my_app/imgPicker.dart';
 import 'package:screenshot/screenshot.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,12 +18,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return CupertinoApp(
-      home: HomeScreen(),
+      home: HomeScreen(), // TODO: (work on theme) theme: CupertinoThemeData(),
     );
   }
 }
 
-String stupido = "";
+String username = "Ori Kosary";
+String host = "192.168.1.40";
+String message = "";
+String hostForMessage = "";
 
 class Screenshotter extends State {
 
@@ -51,262 +56,150 @@ class Screenshotter extends State {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  State createState() => _HomeScreen();
+}
 
-  File _pickedImage;
+class _HomeScreen extends State<HomeScreen> {
 
-  noSuchMethod(Invocation i) => super.noSuchMethod(i);
-//  State<HomeScreen>();
-
-  // Gets Ip
-  Future<String> getIP() async {
-    return GetIp.ipAddress;
-  }
-
-
-//  static String ip = getAddress(); // This will be the server ip, '''don't forget to display it'''
+  bool lockDown = true; // this will be for the switch that only when it is on ill be able to send commands
   int port = 8200;
-//  InternetAddress address = InternetAddress('127.0.0.1');
-  Screenshotter s = new Screenshotter();
+  Base64Encoder b64e = new Base64Encoder();
+  Base64Decoder b64d = new Base64Decoder();
+
+  final TextEditingController _textController = new TextEditingController();
+  final TextEditingController _textController2 = new TextEditingController();
+  final TextEditingController _textController3 = new TextEditingController();
+  final TextEditingController _textController4 = new TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    _textController.dispose();
+    super.dispose();
+  }
 
   Socket socket;
-  Base64Encoder b64e = new Base64Encoder();
-  Latin1Encoder l1e = new Latin1Encoder();
 
-  Future getImageFromCamera() async {
-
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
-    if (image != null) {
-      _pickedImage = image;
-    }
-
-  }
-
-  Future getImageFromGallery() async {
-
-    final file = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (file != null) {
-      _pickedImage = file;
-    }
-  }
-
-  ScreenshotController screenshotController = ScreenshotController();
-
-  // Gets screenshot
-  File get_screen_shot() {
-    Screenshot(
-      controller: screenshotController,
-    );
-    screenshotController.capture().then((File image) {
-      //Capture Done
-      if (image != null){
-        _pickedImage = image;
-      }
-    }).catchError((onError) {
-      print(onError);
-    });
-    return _pickedImage;
-  }
-
-  void main() {
-    // CupertinoTextField(controller: _textController,);
-    getImageFromGallery();
-    // _pickedImage = get_screen_shot();
-    Socket.connect("192.168.1.40", port).then((socket) async {
-      if (_pickedImage != null) {
-        List<int> imageBytes = await _pickedImage.readAsBytes();
-        String base64Image = b64e.convert(imageBytes);
-        String base64ImageStringLen = base64Image.length.toString();
-        stupido = base64ImageStringLen;
-        socket.write(base64Image);
-      }
-      else {
-         socket.write('null');
-      }
+  void sendLocation(String location) {
+    Socket.connect(host, port).then((socket) async {
+        socket.write(location + ",Q3bv76"); // The string is a code to unlock move to location
     });
     socket.close();
   }
 
-  TextEditingController _textController;
+  void sendDataToType(String data) {
+    Socket.connect(host, port).then((socket) async {
+      socket.write(data + "P2lw60");
+    });
+    socket.close();
+  }
 
-  @override
-  void initState() {
-//    super.initState();
-    _textController = TextEditingController(text: 'initial text');
+  void click() {
+    Socket.connect(host, port).then((socket) async {
+      socket.write("B7kj89");
+    });
+    socket.close();
+  }
+
+  void _submitMsg(String txt) {
+    sendLocation(_textController.text);
+    _textController.clear();
+  }
+
+  void _submitMsg2(String txt) {
+    host = _textController2.text;
+    _textController2.clear();
+  }
+
+  void _submitMsg3(String txt) {
+    sendDataToType(_textController3.text);
+    _textController3.clear();
+  }
+
+  void moveUp() {
+    Socket.connect(host, port).then((socket) async {
+      socket.write("A4up21");
+    });
+    socket.close();
+  }
+
+  void moveDown() {
+    Socket.connect(host, port).then((socket) async {
+      socket.write("A4dw21");
+    });
+    socket.close();
+  }
+
+  void moveLeft() {
+    Socket.connect(host, port).then((socket) async {
+      socket.write("A4lt21");
+    });
+    socket.close();
+  }
+
+  void moveRight() {
+    Socket.connect(host, port).then((socket) async {
+      socket.write("A4rt21");
+    });
+    socket.close();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    return CupertinoTabScaffold(
-        tabBar: CupertinoTabBar(
-          items: [
-            BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.home),
-                title: Text('Home')
+    return new Scaffold(
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: Row(
+              children: <Widget>[
+                new Flexible(
+                  child: new CupertinoTextField(
+                    controller: _textController2, onSubmitted: _submitMsg2, decoration: BoxDecoration(border: Border.all(color: Colors.black45, width: 1), borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.person),
-                title: Text('Profile')
+          ),
+          Expanded(
+            child: Center(
+              child: CupertinoButton(child: Icon(CupertinoIcons.up_arrow, size: 100,), onPressed: () { moveUp(); },),
             ),
-          ],
-        ),
-        tabBuilder: (context, i){
-          return CupertinoTabView(
-              builder: (context) {
-                return CupertinoPageScaffold(
-                    navigationBar: CupertinoNavigationBar(
-                      middle: (i == 0) ? Text('Home') : Text('Profile'),
-                    ),
-                    // TODO : Here i will put a diffrent parameter for the condition!!!!!
-                    child: Center(
-                      //need to do if/else statement to declare what name to do for each button
-                        child: (i == 0) ?
-                        CupertinoButton(
-                          //TODO : Here just switch the text to icon and use the right paramaters
-                          // Text('Button for Server', style : CupertinoTheme.of(context).textTheme.actionTextStyle.copyWith(fontSize: 32)),
-                          child: Icon(CupertinoIcons.play_arrow_solid, size: 180.0),
-                          // TODO : need to do if/else statement to declare what function to do for each button
-                          onPressed: () {
-                            // START STREAMING
-                            main();
-                          }, // TODO : need to figure out how to work with future, and how to write more then 1 line
-                        ) : _pickedImage == null ?  Text("No Image") : Text(stupido)//Image.file(_pickedImage, width: 300, height: 200)
-                    )
-                );
-              }
-          );
-        }
-    );
-  }
-}
-
-class DetailScreen extends StatelessWidget {
-  const DetailScreen(this.topic);
-
-  final String topic;
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text('Details'),
-      ),
-      child: Center(
-        // TODO : here will be the condition statement
-        child: Text(
-          'Details for $topic',
-          style: CupertinoTheme.of(context).textTheme.navLargeTitleTextStyle,
-        ),
+          ),
+          Expanded(
+            child: Row(
+              children: <Widget>[
+                new Flexible(
+                  child: new CupertinoTextField(
+                    controller: _textController, onSubmitted: _submitMsg, decoration: BoxDecoration(border: Border.all(color: Colors.black45, width: 1), borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                new Expanded(
+                  child: CupertinoButton(child: Icon(CupertinoIcons.play_arrow_solid, size: 100,), onPressed: () {click(); },)
+                )
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              children: <Widget>[
+                new Flexible(
+                  child: new CupertinoTextField(
+                    controller: _textController3, onSubmitted: _submitMsg3, decoration: BoxDecoration(border: Border.all(color: Colors.black45, width: 1), borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                new Expanded(
+                    child: Text("here write if u want to type"),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-//class MyApp extends StatelessWidget {
-//  // This widget is the root of your application.
-//  @override
-//  Widget build(BuildContext context) {
-//    return MaterialApp(
-//      title: 'Flutter Demo',
-//      theme: ThemeData(
-//        // This is the theme of your application.
-//        //
-//        // Try running your application with "flutter run". You'll see the
-//        // application has a blue toolbar. Then, without quitting the app, try
-//        // changing the primarySwatch below to Colors.green and then invoke
-//        // "hot reload" (press "r" in the console where you ran "flutter run",
-//        // or simply save your changes to "hot reload" in a Flutter IDE).
-//        // Notice that the counter didn't reset back to zero; the application
-//        // is not restarted.
-//        primarySwatch: Colors.blue,
-//      ),
-//      home: MyHomePage(title: 'Flutter Demo Home Page'),
-//    );
-//  }
-//}
-//
-//class MyHomePage extends StatefulWidget {
-//  MyHomePage({Key key, this.title}) : super(key: key);
-//
-//  // This widget is the home page of your application. It is stateful, meaning
-//  // that it has a State object (defined below) that contains fields that affect
-//  // how it looks.
-//
-//  // This class is the configuration for the state. It holds the values (in this
-//  // case the title) provided by the parent (in this case the App widget) and
-//  // used by the build method of the State. Fields in a Widget subclass are
-//  // always marked "final".
-//
-//  final String title;
-//
-//  @override
-//  _MyHomePageState createState() => _MyHomePageState();
-//}
-//
-//class _MyHomePageState extends State<MyHomePage> {
-//  int _counter = 0;
-//
-//  void _incrementCounter() {
-//    setState(() {
-//      // This call to setState tells the Flutter framework that something has
-//      // changed in this State, which causes it to rerun the build method below
-//      // so that the display can reflect the updated values. If we changed
-//      // _counter without calling setState(), then the build method would not be
-//      // called again, and so nothing would appear to happen.
-//      _counter++;
-//    });
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    // This method is rerun every time setState is called, for instance as done
-//    // by the _incrementCounter method above.
-//    //
-//    // The Flutter framework has been optimized to make rerunning build methods
-//    // fast, so that you can just rebuild anything that needs updating rather
-//    // than having to individually change instances of widgets.
-//    return Scaffold(
-//      appBar: AppBar(
-//        // Here we take the value from the MyHomePage object that was created by
-//        // the App.build method, and use it to set our appbar title.
-//        title: Text(widget.title),
-//      ),
-//      body: Center(
-//        // Center is a layout widget. It takes a single child and positions it
-//        // in the middle of the parent.
-//        child: Column(
-//          // Column is also a layout widget. It takes a list of children and
-//          // arranges them vertically. By default, it sizes itself to fit its
-//          // children horizontally, and tries to be as tall as its parent.
-//          //
-//          // Invoke "debug painting" (press "p" in the console, choose the
-//          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-//          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-//          // to see the wireframe for each widget.
-//          //
-//          // Column has various properties to control how it sizes itself and
-//          // how it positions its children. Here we use mainAxisAlignment to
-//          // center the children vertically; the main axis here is the vertical
-//          // axis because Columns are vertical (the cross axis would be
-//          // horizontal).
-//          mainAxisAlignment: MainAxisAlignment.center,
-//          children: <Widget>[
-//            Text(
-//              'You have clicked the button this many times:',
-//            ),
-//            Text(
-//              '$_counter',
-//              style: Theme.of(context).textTheme.display1,
-//            ),
-//          ],
-//        ),
-//      ),
-//      floatingActionButton: FloatingActionButton(
-//        onPressed: _incrementCounter,
-//        tooltip: 'Increment',
-//        child: Icon(Icons.add),
-//      ), // This trailing comma makes auto-formatting nicer for build methods.
-//    );
-//  }
-//}
+
+
