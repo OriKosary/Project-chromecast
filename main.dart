@@ -24,37 +24,9 @@ class MyApp extends StatelessWidget {
 }
 
 String username = "Ori Kosary";
-String host = "192.168.1.40";
+String host = "";
 String message = "";
 String hostForMessage = "";
-
-class Screenshotter extends State {
-
-  noSuchMethod(Invocation i) => super.noSuchMethod(i);
-
-  int _counter = 0;
-  File _imageFile;
-  // Future<File> _futureImage;
-
-  //Create an instance of ScreenshotController
-  ScreenshotController screenshotController = ScreenshotController();
-
-  // Gets screenshot
-  File get_screen_shot() {
-    Screenshot(
-      controller: screenshotController,
-    );
-    screenshotController.capture().then((File image) {
-      //Capture Done
-      setState(() {
-        _imageFile = image;
-      });
-    }).catchError((onError) {
-      print(onError);
-    });
-    return _imageFile;
-  }
-}
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -110,17 +82,20 @@ class _HomeScreen extends State<HomeScreen> {
 
   void _submitMsg2(String txt) {
     host = _textController2.text;
+    Socket.connect(host, port).then((socket) async {
+      socket.write("client is connected");
+    });
     _textController2.clear();
   }
 
   void _submitMsg3(String txt) {
-    sendDataToType(_textController3.text);
-    _textController3.clear();
+    sendDataToType(_textController.text);
+    _textController.clear();
   }
 
   void moveUp() {
     Socket.connect(host, port).then((socket) async {
-      socket.write("A4up21");
+        socket.write("A4up21");
     });
     socket.close();
   }
@@ -132,19 +107,84 @@ class _HomeScreen extends State<HomeScreen> {
     socket.close();
   }
 
-  void moveLeft() {
+  void moveRight() {
     Socket.connect(host, port).then((socket) async {
       socket.write("A4lt21");
     });
     socket.close();
   }
 
-  void moveRight() {
+
+  void moveLeft() {
     Socket.connect(host, port).then((socket) async {
       socket.write("A4rt21");
     });
     socket.close();
   }
+
+  void enter() {
+    Socket.connect(host, port).then((socket) async {
+      socket.write("S3hu22");
+    });
+    socket.close();
+  }
+
+  void delete() {
+    Socket.connect(host, port).then((socket) async {
+//      socket.write("S7tl23");
+    });
+    socket.close();
+  }
+
+//  bool movingUp = true;
+//
+//  void moveUpCon() {
+//    movingUp = true;
+//    Socket.connect(host, port).then((socket) async {
+//      while(movingUp == true) {
+//        socket.write("A4up21");
+//      }
+//    });
+//    socket.close();
+//  }
+//
+//  bool movingDown = true;
+//
+//  void moveDownCon() {
+//    movingDown = true;
+//    Socket.connect(host, port).then((socket) async {
+//      while (movingDown == true) {
+//        socket.write("A4dw21");
+//      }
+//    });
+//    socket.close();
+//  }
+//
+//  bool movingLeft = true;
+//
+//  void moveLeftCon() { // right left is opposite
+//    movingLeft = true;
+//    Socket.connect(host, port).then((socket) async {
+//      while (movingLeft == true) {
+//        socket.write("A4rt21");
+//      }
+//    });
+//    socket.close();
+//  }
+//
+//  bool movingRight = true;
+//
+//  void moveRightCon() {
+//    movingRight = true;
+//    Socket.connect(host, port).then((socket) async {
+//      while (movingRight == true) {
+//        Timer(Duration(seconds: 3), () {
+//          socket.write("A4lt21");
+//        });
+//      }
+//    });
+//    socket.close();
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,19 +204,35 @@ class _HomeScreen extends State<HomeScreen> {
           ),
           Expanded(
             child: Center(
-              child: CupertinoButton(child: Icon(CupertinoIcons.up_arrow, size: 100,), onPressed: () { moveUp(); },),
+                  child: CupertinoButton(child: Icon(CupertinoIcons.up_arrow, size: 100,), onPressed: () { moveUp(); },),
+                )
+          ),
+          Expanded(
+            child: Row(
+              children: <Widget>[
+                new Expanded(
+                  child: CupertinoButton(child: Icon(CupertinoIcons.left_chevron, size: 100,), onPressed: () { moveLeft(); },),
+                ),
+                new Expanded(
+                  child: CupertinoButton(child: Icon(CupertinoIcons.circle_filled, size: 100,), onPressed: () { click(); },),
+                ),
+                new Expanded(
+                    child: CupertinoButton(child: Icon(CupertinoIcons.right_chevron, size: 100,), onPressed: () { moveRight(); },),
+                  )
+              ],
             ),
           ),
           Expanded(
             child: Row(
               children: <Widget>[
-                new Flexible(
-                  child: new CupertinoTextField(
-                    controller: _textController, onSubmitted: _submitMsg, decoration: BoxDecoration(border: Border.all(color: Colors.black45, width: 1), borderRadius: BorderRadius.circular(12)),
-                  ),
+                new Expanded(
+                  child: Text(' ')
                 ),
                 new Expanded(
-                  child: CupertinoButton(child: Icon(CupertinoIcons.play_arrow_solid, size: 100,), onPressed: () {click(); },)
+                  child: CupertinoButton(child: Icon(CupertinoIcons.down_arrow, size: 100,), onPressed: () { moveDown(); },),
+                ),
+                new Expanded(
+                  child: CupertinoButton(child: Icon(CupertinoIcons.back, size: 55), onPressed: () { delete(); },),
                 )
               ],
             ),
@@ -186,12 +242,12 @@ class _HomeScreen extends State<HomeScreen> {
               children: <Widget>[
                 new Flexible(
                   child: new CupertinoTextField(
-                    controller: _textController3, onSubmitted: _submitMsg3, decoration: BoxDecoration(border: Border.all(color: Colors.black45, width: 1), borderRadius: BorderRadius.circular(12)),
+                    controller: _textController, onSubmitted: _submitMsg3, decoration: BoxDecoration(border: Border.all(color: Colors.black45, width: 1), borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
                 new Expanded(
-                    child: Text("here write if u want to type"),
-                ),
+                    child: new CupertinoButton(child: Text('Enter',), minSize: 55, onPressed: () { enter(); })
+                )
               ],
             ),
           ),
